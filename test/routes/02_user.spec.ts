@@ -25,8 +25,7 @@ describe('userRoute', () => {
 
   before(done => {
     expect(UserModel.modelName).to.be.equal('User')
-    // UserModel.collection.drop()
-    UserModel.db.db.dropCollection('users', async (err, result) => {
+    UserModel.db.db.dropCollection('User', async (err, result) => {
       const newUser = new UserModel(user)
       newUser.password = bcrypt.hashSync(newUser.password, 10)
       newUser.save(async (error, userCreated) => {
@@ -37,7 +36,7 @@ describe('userRoute', () => {
       })
     })
   })
-  it('shoudl be able to login', () => {
+  it('should be able to login', () => {
     return chai
       .request(app)
       .get(`/users/login?username=${user.username}&password=${user.password}`)

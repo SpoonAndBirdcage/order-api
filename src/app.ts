@@ -15,14 +15,18 @@ class App {
   public userRoutes: UserRoute = new UserRoute()
   public apiRoutes: APIRoute = new APIRoute()
   public orderRoutes: OrderRoute = new OrderRoute()
-  public mongoUrl: string
+  public mongoUrl: string = 'mongodb://localhost:27018/order-api'
   public mongoUser: string
   public mongoPass: string
 
   constructor() {
     const path = `${__dirname}/../.env.${process.env.NODE_ENV}`
+    // tslint:disable-next-line: no-console
+    console.log(path)
     dotenv.config({ path: path })
     this.mongoUrl = `mongodb://${process.env.MONGODB_URL_PORT}/${process.env.MONGODB_DATABASE}`
+    // tslint:disable-next-line: no-console
+    console.log(this.mongoUrl)
     this.mongoUser = `${process.env.MONGODB_USER}`
     this.mongoPass = `${process.env.MONGODB_PASS}`
     this.app = express()

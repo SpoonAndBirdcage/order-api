@@ -25,15 +25,13 @@ describe('userRoute', () => {
 
   before(done => {
     expect(UserModel.modelName).to.be.equal('User')
-    UserModel.db.db.dropCollection('User', async (err, result) => {
-      const newUser = new UserModel(user)
-      newUser.password = bcrypt.hashSync(newUser.password, 10)
-      newUser.save(async (error, userCreated) => {
-        // tslint:disable-next-line: no-console
-        console.log('criou')
-        user._id = userCreated._id
-        done()
-      })
+    const newUser = new UserModel(user)
+    newUser.password = bcrypt.hashSync(newUser.password, 10)
+    newUser.save(async (error, userCreated) => {
+      // tslint:disable-next-line: no-console
+      console.log('criou')
+      user._id = userCreated._id
+      done()
     })
   })
   it('should be able to login', () => {
@@ -138,5 +136,8 @@ describe('userRoute', () => {
       .then(res => {
         expect(res.status).to.be.equal(404)
       })
+  })
+  after(done => {
+    UserModel.collection.drop()
   })
 })

@@ -4,6 +4,7 @@ import chaiHttp = require('chai-http')
 import 'mocha'
 import app from '../../src/app'
 import { UserModel } from '../../src/schemas/user'
+import { OrderAPILogger } from '../../src/utils/logger'
 
 chai.use(chaiHttp)
 
@@ -15,9 +16,9 @@ describe('userRoute', () => {
     username: 'John',
     firstName: 'John',
     lastName: 'Doe',
-    email: 'jhon@myemail.com',
+    email: 'John@myemail.com',
     password: 'password',
-    phone: '5555555555',
+    phone: '5555555',
     userStatus: 1,
   }
 
@@ -25,13 +26,19 @@ describe('userRoute', () => {
 
   before(done => {
     expect(UserModel.modelName).to.be.equal('User')
-    const newUser = new UserModel(user)
-    newUser.password = bcrypt.hashSync(newUser.password, 10)
-    newUser.save(async (error, userCreated) => {
-      // tslint:disable-next-line: no-console
-      console.log('criou')
-      user._id = userCreated._id
-      done()
+
+    UserModel.db.db.dropCollection('users', async (err, result) => {
+      const newUser = new UserModel(user)
+      newUser.password = bcrypt.hashSync(newUser.password, 10)
+
+      OrderAPILogger.logger.info(
+        'calling save to create a default user for loging'
+      )
+
+      newUser.save(async (error, userCreated) => {
+        user._id = userCreated._id
+        done()
+      })
     })
   })
   it('should be able to login', () => {
@@ -136,8 +143,5 @@ describe('userRoute', () => {
       .then(res => {
         expect(res.status).to.be.equal(404)
       })
-  })
-  after(done => {
-    UserModel.collection.drop()
   })
 })
